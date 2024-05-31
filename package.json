@@ -99,6 +99,7 @@
     "json-stringify-safe": "^5.0.1",
     "jsonfile": "^6.1.0",
     "jsprim": "^2.0.2",
+    "latest-version": "^9.0.0",
     "lazy-ass": "^1.6.0",
     "listr2": "^3.14.0",
     "lodash": "^4.17.21",

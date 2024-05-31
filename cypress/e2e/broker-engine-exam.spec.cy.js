@@ -2,9 +2,11 @@ import { LoginPageObjects, DealsPageObjects }  from "../support/page-objects"
 const $LoginPageObjects = new LoginPageObjects();
 const $DealsPageObjects = new DealsPageObjects();
 
+
 before(() => {
   $LoginPageObjects.login();
 });
+
 
 describe('Broker Engine Exam', () => {
 
@@ -13,8 +15,6 @@ describe('Broker Engine Exam', () => {
     //$DealsPageObjects.validateDealDetails();
   })
 
-
-
-
   
 })
+

@@ -6,7 +6,7 @@ const $GlobalObjects = new GlobalObjects();
 const randomString = $GlobalObjects.generateRandomString(5,'abcdefghijklmnopqrstuvwxyz0123456789');
 
 const newDealName = "Deal No.: " + randomString;
-const selectedBroker = staticData.brokerList[$GlobalObjects.randomIndexWithExclusion(staticData.brokerList,0)];
+const selectedBroker = staticData.brokerList[0];
 const selectedFirstName = staticData.firstNames[$GlobalObjects.randomIndexWithExclusion(staticData.firstNames)];
 const selectedLastName = staticData.lastNames[$GlobalObjects.randomIndexWithExclusion(staticData.lastNames)];
 const completeName = selectedFirstName + " " + selectedLastName;
@@ -42,7 +42,7 @@ export class DealsPageObjects {
 
     selectStage(optionIndex){
         $GlobalObjects.clickElement(DealsPageSelectors.stageDropdownField);
-        $GlobalObjects.clickElement(DealsPageSelectors.stageOptions,optionIndex);
+        $GlobalObjects.clickElement(DealsPageSelectors.stageDropdownField,optionIndex);
         cy.wait(100);
     }
 
@@ -66,7 +66,7 @@ export class DealsPageObjects {
         $GlobalObjects.clearAndType(DealsPageSelectors.dealNameInputField,newDealName);
         this.selectBroker();
         this.addNewApplicant();
-        //this.selectStage(selectedStageIndex);
+        this.selectStage(selectedStageIndex);
         //this.selectLender(selectedLender);
         //this.selectTeam(selectedTeam);
         //$GlobalObjects.clickElement(DealsPageSelectors.addDealButton);

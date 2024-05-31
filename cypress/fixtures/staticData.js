@@ -1,9 +1,9 @@
 export const staticData = {
    brokerList : [
    "Cara Mooney",
-   //"Ernest Morris",
-   //"Johan Horn",
-   //"Stella Kirby",
+   "Ernest Morris",
+   "Johan Horn",
+   "Stella Kirby",
    ],
 
    firstNames : [
