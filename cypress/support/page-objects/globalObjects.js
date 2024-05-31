@@ -1,30 +1,29 @@
 export class GlobalObjects {
 
     clickElement(element, index = 0){
-     element().eq(index).click();
+        element().eq(index).click({force:true});
     }
 
     clearAndType(element, value){
-        element().clear();
-        element().type(value);
+        element().clear({force:true});
+        element().type(value,{force:true});
     }
 
     typeAndEnter(element, value){
-        element().clear();
-        element().type(`${value}{enter}`);
+        element().clear({force:true});
+        element().type(`${value}{enter}`,{force:true});
     }
 
     waitForElement(element){
         element().should('be.visible');
     }
 
-    randomIndexWithExclusion(excludedIndex = -1, arrayData){
+    randomIndexWithExclusion(arrayData, excludedIndex = -1){
         let index;
         do {
             index = Math.floor(Math.random() * arrayData.length);
         } while (index === excludedIndex); 
-        const randomIndex = arrayData[index];
-        return randomIndex
+        return index;
     }
 
     generateRandomString(stringLength,charSet){

@@ -1,3 +1,3 @@
 export * from "./globalObjects"
-export * from "./leadsPageObjects";
+export * from "./dealsPageObjects";
 export * from "./loginPageObjects";

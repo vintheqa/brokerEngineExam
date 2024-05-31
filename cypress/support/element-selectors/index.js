@@ -1,2 +1,2 @@
-export * from "./leadsPageSelectors"
+export * from "./dealsPageSelectors"
 export * from "./loginPageSelectors";

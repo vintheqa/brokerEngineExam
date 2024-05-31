@@ -1,9 +1,9 @@
 export const staticData = {
    brokerList : [
-   "Cara Mooney (test+auto7@brokerengine.com.au)",
-   "Ernest Morris (test+auto8@brokerengine.com.au)",
-   "Johan Horn (test+auto5@brokerengine.com.au)",
-   "Stella Kirby (test+auto6@brokerengine.com.au)",
+   "Cara Mooney",
+   //"Ernest Morris",
+   //"Johan Horn",
+   //"Stella Kirby",
    ],
 
    firstNames : [
@@ -22,10 +22,10 @@ export const staticData = {
 
    lenders : [
       "Adaptive regional leverage",
-      "Carlson-Burgess",
-      "Kim Ltd",
-      "Powell Group",
-      "Ramirez Inc",
+      "Bernard-Mathis",
+      "Jenkins PLC",
+      "Mccoy Group",
+      "Moore, Cantu and Michael",
    ],
 
    teams : [

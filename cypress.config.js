@@ -4,7 +4,7 @@ module.exports = defineConfig({
   viewportWidth: 1920,
   viewportHeight: 1080,
   env:{
-    baseURL: "https://dev4.brokerengine.com.au/",
+    baseURL: "https://dev3.brokerengine.com.au/",
   },
   e2e: {
     setupNodeEvents(on, config) {
