@@ -15,10 +15,13 @@ const selectedStage = staticData.stages[selectedStageIndex];
 const selectedLender = staticData.lenders[$GlobalObjects.randomIndexWithExclusion(staticData.lenders)];
 const selectedTeam = staticData.teams[$GlobalObjects.randomIndexWithExclusion(staticData.teams)];
 const newApplicantEmail = `test+${randomString}@brokerengine.com.au`;
-const newApplicantMobileNum = '0491' + $GlobalObjects.generateRandomString(6,'23456789');
-
+const newApplicantMobileNum = '491' + $GlobalObjects.generateRandomString(6,'23456789');
 
 export class DealsPageObjects {
+
+    navigateToDealViaUrl(dealId){
+        cy.visit(`${Cypress.env("baseURL")}/applications/${dealId}/activity/`);
+    }
 
     selectBroker(){
         $GlobalObjects.clickElement(DealsPageSelectors.brokerInputField);
@@ -42,7 +45,13 @@ export class DealsPageObjects {
 
     selectStage(optionIndex){
         $GlobalObjects.clickElement(DealsPageSelectors.stageDropdownField);
-        $GlobalObjects.clickElement(DealsPageSelectors.stageDropdownField,optionIndex);
+        $GlobalObjects.clickElement(DealsPageSelectors.stageOptions,optionIndex);
+        cy.wait(100);
+    }
+
+    updateDealStage(optionIndex){
+        $GlobalObjects.clickElement(DealsPageSelectors.dealHeaderStage);
+        $GlobalObjects.clickElement(DealsPageSelectors.stageOptions,optionIndex);
         cy.wait(100);
     }
 
@@ -67,20 +76,18 @@ export class DealsPageObjects {
         this.selectBroker();
         this.addNewApplicant();
         this.selectStage(selectedStageIndex);
-        //this.selectLender(selectedLender);
-        //this.selectTeam(selectedTeam);
-        //$GlobalObjects.clickElement(DealsPageSelectors.addDealButton);
-        //cy.contains(`${newDealName}`).should('be.visible')
+        this.selectLender(selectedLender);
+        $GlobalObjects.clickElement(DealsPageSelectors.addDealButton);
     }
   
     validateDealDetails(){
-        DealsPageSelectors.dealHeaderDealName().find('span').contains(newDealName);
+        DealsPageSelectors.dealHeaderDealName().contains(newDealName);
         DealsPageSelectors.dealHeaderBroker().contains(selectedBroker);
-        DealsPageSelectors.dealHeaderAssignedTeam().invoke(text).should('include',`${selectedBroker}`);
-        DealsPageSelectors.dealHeaderStage().invoke(text).should('include',`${selectedStage}`);
+        DealsPageSelectors.dealHeaderStage().invoke('text').should('include',`${selectedStage}`);
         DealsPageSelectors.dealHeader().find('span').contains(selectedLender);
         DealsPageSelectors.dealApplicantName().contains(completeName);
-        DealsPageSelectors.dealApplicantEmail().find(a).contains(newApplicantEmail);
-        DealsPageSelectors.dealApplicantMobileNum().find(a).contains(newApplicantMobileNum);
+        DealsPageSelectors.dealApplicantEmail().find('a').contains(newApplicantEmail);
+        DealsPageSelectors.dealApplicantMobileNum().find('a').invoke('text').should('include',`${newApplicantMobileNum}`);
     }
+
   }

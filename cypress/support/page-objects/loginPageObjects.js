@@ -6,14 +6,25 @@ const $GlobalObjects = new GlobalObjects();
 
 export class LoginPageObjects {
 
-    login(){
+    loginAndGetToken(){
+        let loginCookie;
+        let loginToken;
+        cy.intercept('POST', `${Cypress.env("baseURL")}/auth/2fa/login/`).as('login');
         cy.visit(Cypress.env("baseURL"));
         $GlobalObjects.waitForElement(LoginPageSelectors.emailInputField);
         $GlobalObjects.clearAndType(LoginPageSelectors.emailInputField,userLogin.email);
         $GlobalObjects.clearAndType(LoginPageSelectors.passwordInputField,userLogin.password);
         $GlobalObjects.clickElement(LoginPageSelectors.loginButton);
-        cy.url().should('include','/boards',{timeout: 4000})
-        $GlobalObjects.waitForElement(DealsPageSelectors.newButton);
+
+        cy.wait('@login').then((loginAPI) => {
+            expect(loginAPI.response.statusCode).to.eq(200);
+            loginCookie = loginAPI.request.headers['Cookie'];
+            loginToken = loginAPI.request.headers['X-Csrftoken'];
+          });
+        console.log('cookie: '+loginCookie);
+        console.log('token: '+loginToken);
+        return [loginCookie,loginToken]
+
     }
   
   }

@@ -5,7 +5,7 @@ export const DealsPageSelectors = {
     //brokerOptions: (selectedBroker) => cy.get(`div[title=${selectedBroker}]`),
     applicantInputField: () => cy.get('input[id="rc_select_2"]'),
     stageDropdownField: () => cy.get('span').contains('Select Stage'),
-    //stageOptions: () => cy.get('div[title="Select Stage"]'),
+    stageOptions: () => cy.get('div[title="Select Stage"]'),
     lenderInputField: () => cy.get('div[name="brokerLenderId"]').find('input'),
     assignedTeamInputField: () => cy.get('div[name="assignedTeamId"]').find('input'),
     addDealButton: () => cy.get('button[type="button"]').children('span').contains('Add Deal'),
