@@ -1,18 +1,15 @@
-import { LoginPageObjects, DealsPageObjects, WorkflowTriggerPageObjects }  from "../support/page-objects"
-import { DealsAPI }  from "../support/api-requests"
+import { LoginPageObjects, DealsPageObjects, WorkflowTriggerPageObjects, BoardsPageObjects, GlobalObjects }  from "../support/page-objects"
 const $LoginPageObjects = new LoginPageObjects();
 const $DealsPageObjects = new DealsPageObjects();
 const $WorkflowTriggerPageObjects = new WorkflowTriggerPageObjects();
-const $DealsAPI = new DealsAPI();
-let newDealId
-let loginCookie
-let loginToken
+const $BoardsPageObjects = new BoardsPageObjects();
+const $GlobalObjects = new GlobalObjects();
 
+const randomString = $GlobalObjects.generateRandomString(5,'abcdefghijklmnopqrstuvwxyz0123456789');
 
-before(() => {
- [loginCookie,loginToken] = $LoginPageObjects.loginAndGetToken();
+beforeEach(() => {
+  $LoginPageObjects.login();
 });
-
 
 describe('Broker Engine Exam', () => {
 
@@ -21,14 +18,26 @@ describe('Broker Engine Exam', () => {
     $DealsPageObjects.validateDealDetails();
   })
 
-  it.only('Create a test for workflow trigger', () => {
+  it('Create a workflow trigger', () => {
+    const brokerId = 25
+    const clientId = "617"
+    const currentBoardStage = 316
+    const brokerLenderId = "307"
+    const newWorkflowName = "Workflow: " + randomString;
     $WorkflowTriggerPageObjects.navigateToWorkflowTriggerPage();
-    $WorkflowTriggerPageObjects.createAndPublishWorkflow('Period of Time','Business days','5');
-    newDealId = $DealsAPI.createDealAPI(loginCookie,loginToken);
-    $DealsPageObjects.navigateToDealViaUrl(newDealId);
-    $DealsPageObjects.updateDealStage(1);
-
+    $WorkflowTriggerPageObjects.createAndPublishWorkflow('Period of Time','Business Days','5','2 Prepare for Submission',newWorkflowName);
+    $DealsPageObjects.createAPIDealAndNavigateViaURL(brokerId,clientId,currentBoardStage,brokerLenderId)
+    $DealsPageObjects.updateDealStage('2 Prepare for Submission');
+    $WorkflowTriggerPageObjects.validateTriggeredWorkflowDelay(newWorkflowName,'Delay','Period of Time',5,'Business Days')
   })
+
+  it('Test Re-ordering of board', () => {
+    const newBoardName = "Board: " + randomString;
+    $BoardsPageObjects.navigateToBoardPage();
+    $BoardsPageObjects.createBoardAndReorderToTop(newBoardName);
+    $BoardsPageObjects.checkBoardTilePosition(0,newBoardName);
+  })
+
 
   
 })

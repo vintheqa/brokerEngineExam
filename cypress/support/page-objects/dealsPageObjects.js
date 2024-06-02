@@ -1,5 +1,5 @@
 import {DealsPageSelectors} from "../element-selectors";
-import { GlobalObjects }  from ".";
+import { GlobalObjects }  from "../page-objects";
 import {staticData} from "../../fixtures/staticData"
 
 const $GlobalObjects = new GlobalObjects();
@@ -19,9 +19,50 @@ const newApplicantMobileNum = '491' + $GlobalObjects.generateRandomString(6,'234
 
 export class DealsPageObjects {
 
-    navigateToDealViaUrl(dealId){
-        cy.visit(`${Cypress.env("baseURL")}/applications/${dealId}/activity/`);
-    }
+    createAPIDealAndNavigateViaURL(brokerId,clientId,currentBoardStage,brokerLenderId){
+        let dealId
+        let createDealCsrfToken 
+        let createDealcookieValue 
+  
+        cy.readFile('cypress/fixtures/cookies.json').then((data) => {
+            createDealcookieValue = data
+        });
+  
+        cy.readFile('cypress/fixtures/token.json').then((data) => {
+            createDealCsrfToken = data
+        });
+  
+        const requestBody = {
+          brokerId: brokerId,
+          clientId: clientId,
+          currentBoardStage: currentBoardStage,
+          roles: [],
+          brokerLenderId: brokerLenderId,
+          name: newDealName,
+        };
+  
+        cy.getCookies().then(() => {
+            cy.request({
+                method: 'POST',
+                url: `${Cypress.env("baseURL")}/rad-api/be_core.loanapplication/`,
+                headers: {
+                'Cookie': createDealcookieValue, 
+                'X-Csrftoken': createDealCsrfToken,
+                'Content-Type': 'application/json',
+                'referer': `${Cypress.env("baseURL")}/boards/deal/`,
+                },
+                body: requestBody
+            }).then((response) => {
+                expect(response.status).to.eq(201);
+                dealId = response.body.fundingPosition.loanId;
+                cy.visit(`${Cypress.env("baseURL")}/applications/${dealId}/activity/`);
+                cy.writeFile('cypress/fixtures/cookies.json', '');
+                cy.writeFile('cypress/fixtures/token.json', '');
+            })
+        })
+  
+      }
+
 
     selectBroker(){
         $GlobalObjects.clickElement(DealsPageSelectors.brokerInputField);
@@ -49,10 +90,10 @@ export class DealsPageObjects {
         cy.wait(100);
     }
 
-    updateDealStage(optionIndex){
+    updateDealStage(stageName){
         $GlobalObjects.clickElement(DealsPageSelectors.dealHeaderStage);
-        $GlobalObjects.clickElement(DealsPageSelectors.stageOptions,optionIndex);
-        cy.wait(100);
+        DealsPageSelectors.stageOptions().children('div').children('span').contains(`${stageName}`).click();
+        cy.wait(500);
     }
 
     selectLender(selectedValue){
@@ -70,6 +111,7 @@ export class DealsPageObjects {
     }
 
     createDeal(){
+        cy.intercept('POST', `${Cypress.env("baseURL")}/rad-api/be_core.loanapplication/`).as('createLoan');
         $GlobalObjects.clickElement(DealsPageSelectors.newButton);
         $GlobalObjects.waitForElement(DealsPageSelectors.dealNameInputField)
         $GlobalObjects.clearAndType(DealsPageSelectors.dealNameInputField,newDealName);
@@ -78,6 +120,15 @@ export class DealsPageObjects {
         this.selectStage(selectedStageIndex);
         this.selectLender(selectedLender);
         $GlobalObjects.clickElement(DealsPageSelectors.addDealButton);
+        cy.wait('@createLoan').then((loanAPi) => {
+            expect(loanAPi.response.statusCode).to.eq(201);
+            const cookieVal = loanAPi.request.headers.cookie;
+            const csrfToken = cookieVal.split(';').find(cookie => cookie.includes('csrftoken')).split('=')[1];
+            let apiCookie = JSON.stringify(cookieVal);
+            let apiToken = JSON.stringify(csrfToken);
+            cy.writeFile('cypress/fixtures/cookies.json', apiCookie);
+            cy.writeFile('cypress/fixtures/token.json', apiToken);
+          });
     }
   
     validateDealDetails(){
