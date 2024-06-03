@@ -1,15 +1,18 @@
-import { LoginPageObjects, DealsPageObjects, WorkflowTriggerPageObjects, BoardsPageObjects, GlobalObjects }  from "../support/page-objects"
+import { LoginPageObjects, DealsPageObjects, WorkflowTriggerPageObjects, BoardsPageObjects, GlobalObjects, QueuePageObjects }  from "../support/page-objects"
 const $LoginPageObjects = new LoginPageObjects();
 const $DealsPageObjects = new DealsPageObjects();
 const $WorkflowTriggerPageObjects = new WorkflowTriggerPageObjects();
 const $BoardsPageObjects = new BoardsPageObjects();
+const $QueuePageObjects = new QueuePageObjects();
 const $GlobalObjects = new GlobalObjects();
 
 const randomString = $GlobalObjects.generateRandomString(5,'abcdefghijklmnopqrstuvwxyz0123456789');
 
+
 beforeEach(() => {
   $LoginPageObjects.login();
 });
+
 
 describe('Broker Engine Exam', () => {
 
@@ -37,6 +40,19 @@ describe('Broker Engine Exam', () => {
     $BoardsPageObjects.createBoardAndReorderToTop(newBoardName);
     $BoardsPageObjects.checkBoardTilePosition(0,newBoardName);
   })
+
+  it('BONUS POINT - creating a task', () => {
+    const newTaskName = "Task: " + randomString;
+    const dateDDMMYYYY = $GlobalObjects.generateFormattedDate(30,'DD/MM/YYYY');
+    const dateDDMMMYYYY = $GlobalObjects.generateFormattedDate(30,'DD MMM YYYY');
+
+    $QueuePageObjects.navigateToQueuePage();
+    $QueuePageObjects.createAndValidatedCreatedTask(newTaskName,'Cara Mooney','Medium',dateDDMMYYYY,dateDDMMMYYYY,'Task Description');
+    $QueuePageObjects.exportCreatedTask(newTaskName);
+    //$QueuePageObjects.checkExcelFile();
+
+  })
+
 
 
   

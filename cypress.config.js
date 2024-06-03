@@ -10,7 +10,14 @@ module.exports = defineConfig({
   },
   e2e: {
     setupNodeEvents(on, config) {
-      // implement node event listeners here
+      on('task', {
+        parseXlsx({ filePath }) {
+            const workbook = XLSX.readFile(filePath);
+            const sheetNames = workbook.SheetNames;
+            const sheet = workbook.Sheets[sheetNames[0]];
+            return XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        }
+    });
     },
     supportFile: "cypress/support/e2e.{js,jsx,ts,tsx}",
     specPattern: "cypress/e2e/*.spec.cy.js",
