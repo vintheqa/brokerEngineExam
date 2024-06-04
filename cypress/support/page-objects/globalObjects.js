@@ -57,4 +57,25 @@ export class GlobalObjects {
             throw new Error('Unsupported format');
         }
     }
+
+    formatDate(dateValue,format = 'MM/DD/YYYY') {
+        const date = new Date(dateValue);
+
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+        
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthName = monthNames[date.getMonth()];
+    
+        if (format === 'MM/DD/YYYY') {
+            return `${month}/${day}/${year}`;
+        } else if (format === 'DD MMM YYYY') {
+            return `${day} ${monthName} ${year}`;
+        } else if (format === 'DD/MM/YYYY') {
+                return `${day}/${month}/${year}`;
+        } else {
+            throw new Error('Unsupported format');
+        }
+    }
   }

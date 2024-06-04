@@ -8,11 +8,9 @@ const $GlobalObjects = new GlobalObjects();
 
 const randomString = $GlobalObjects.generateRandomString(5,'abcdefghijklmnopqrstuvwxyz0123456789');
 
-
 beforeEach(() => {
   $LoginPageObjects.login();
 });
-
 
 describe('Broker Engine Exam', () => {
 
@@ -41,20 +39,20 @@ describe('Broker Engine Exam', () => {
     $BoardsPageObjects.checkBoardTilePosition(0,newBoardName);
   })
 
-  it('BONUS POINT - creating a task', () => {
+  it('BONUS POINT - Creating a task', () => {
+    const currentDate = $GlobalObjects.generateFormattedDate(0,'DD/MM/YYYY');
     const newTaskName = "Task: " + randomString;
     const dateDDMMYYYY = $GlobalObjects.generateFormattedDate(30,'DD/MM/YYYY');
     const dateDDMMMYYYY = $GlobalObjects.generateFormattedDate(30,'DD MMM YYYY');
 
     $QueuePageObjects.navigateToQueuePage();
     $QueuePageObjects.createAndValidatedCreatedTask(newTaskName,'Cara Mooney','Medium',dateDDMMYYYY,dateDDMMMYYYY,'Task Description');
-    $QueuePageObjects.exportCreatedTask(newTaskName);
-    //$QueuePageObjects.checkExcelFile();
+    $QueuePageObjects.searchTask(newTaskName);
+    $QueuePageObjects.exportTask(newTaskName);
+    cy.wait(1000);
+    $QueuePageObjects.checkTaskExcelFile(newTaskName,'Medium',dateDDMMYYYY,'Cara Mooney',currentDate);
 
   })
 
-
-
-  
 })
 

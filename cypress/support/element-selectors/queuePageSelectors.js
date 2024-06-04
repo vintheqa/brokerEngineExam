@@ -1,5 +1,6 @@
 export const QueuePageSelectors = {
     addTaskButton: () => cy.get('button[data-testid="queue-addButton"]'),
+    taskSearchInputField: () => cy.get('input[data-testid="queue-search"]'),
     taskNameInputButton: () => cy.get('button').find('span').contains('Write a task name'),
     taskNameInputField: () => cy.get('input[placeholder="Write a task name"]'),
     selectAssigneeButton: () => cy.get('label[title="Assignee"]').parent('div').next('div').find('button').children('span').contains('Select'),

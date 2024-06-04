@@ -87,30 +87,68 @@ export class QueuePageObjects {
                 .find('span').contains(priority).should('be.visible');    
             cy.get(`div[data-test-taskid="${createdTaskId}"]`).find('div[data-testid="queue-cell-dateDue"]')
                 .find('span').contains(dueDateDDMMYYYY).should('be.visible');    
-            
           });
-
     }
 
-    exportCreatedTask(taskName){
-        cy.get('div[data-testid="queue-cell-name"]').find('span').contains(taskName).parent('span').parent('div').prev('div').find('input[type="checkbox"]').click();
+    searchTask(taskName){
+        $GlobalObjects.clearAndType(QueuePageSelectors.taskSearchInputField,taskName);
+        cy.wait(500);
+    }
+
+    exportTask(){
         $GlobalObjects.clickElement(QueuePageSelectors.moreActionsButton);
         cy.wait(100);
+        cy.intercept('POST', `${Cypress.env("baseURL")}/rad-api/report-status-poll/`).as('exportFile');
         $GlobalObjects.clickElement(QueuePageSelectors.exportToExcelButton);
+        cy.wait('@exportFile').then((exportFileAPI) => {
+            expect(exportFileAPI.response.statusCode).to.eq(200);
+          });
     }
 
-    checkExcelFile(){
+    checkTaskExcelFile(taskName,priority,dueDate,assignee,createdDate){
         const downloadFolder = Cypress.config('downloadsFolder');
-        const downloadedFilename = path.join(downloadFolder, 'tasks.xlsx'); // Replace with your actual file name
+        cy.deleteDownloadsFolder();
+        cy.task('createFolder',downloadFolder);
+        cy.task('findLatestXlsx', downloadFolder).then((downloadedFilename) => {
+            cy.readFile(downloadedFilename, 'binary', { timeout: 15000 }).then((fileContent) => {
+                cy.task('parseXlsx', { filePath: downloadedFilename }).then((jsonData) => {
+                    // Ensure the file was parsed correctly and contains data
+                    expect(jsonData.length).to.be.greaterThan(0);
+        
+                const headers = jsonData[0];
+                const expectedHeaders = ['Name','Priority','Date Due','Assignee Name', 'Created At'];
+                expectedHeaders.forEach(header => {
+                    expect(headers).to.include(header);
+                });
+        
+                // Find the index of the specific columns to validate
+                const headerIndices = expectedHeaders.map(header => headers.indexOf(header));
+                headerIndices.forEach(index => {
+                    expect(index).to.be.greaterThan(-1); // Ensure header exists
+                });
+        
+                // Validate specific row values for the columns
+                jsonData.slice(1).forEach(row => {
+                    const rowValues = headerIndices.map(index => row[index]);
+                    const [nameFromExcel, priorityNameFromExcel, dateDue, assigneeNameFromExcel, createdAt] = rowValues;
 
-        cy.readFile(downloadedFilename, 'binary', { timeout: 15000 }).then((fileContent) => {
-            cy.task('parseXlsx', { filePath: downloadedFilename }).then((jsonData) => {
-                // Perform your validation
-                expect(jsonData.length).to.be.greaterThan(0);
-                expect(jsonData[0]).to.include.members(['Header1', 'Header2']); // Replace with actual headers
-                expect(jsonData[1]).to.include.members(['Value1', 'Value2']); // Replace with actual expected values
+                    const dueDateFromExcel = new Date(dateDue);
+                    const createdDateFromExcel = $GlobalObjects.formatDate(createdAt)
+                    const expectedDate1 = new Date(dueDate);
+                    const expectedDate2 = $GlobalObjects.formatDate(createdDate); 
+
+                    // Validate values
+                    expect(nameFromExcel).to.eql(taskName);
+                    expect(priorityNameFromExcel).to.eql(priority);
+                    expect(dueDateFromExcel).to.eql(expectedDate1);
+                    expect(assigneeNameFromExcel).to.eql(assignee);
+                    expect(createdDateFromExcel).to.eql(expectedDate2);
+
+                    });
+                });
             });
         });
     }
 
+    
   }

@@ -23,6 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+require('cypress-delete-downloads-folder').addCustomCommand();
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     // returning false here prevents Cypress from
